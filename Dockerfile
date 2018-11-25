@@ -7,10 +7,11 @@ WORKDIR /app
 COPY --from=clone /app/demowebapp /app 
 RUN mvn clean install
 
-FROM openjdk:8-jre-alpine
+FROM containers.cisco.com/aws_managed/tomcat-8-jws3.1
+EXPOSE 8080
 WORKDIR /app
-COPY --from=build /app/target/demowebapp.war ${CATALINA_HOME}/webapps/
-CMD ${CATALINA_HOME}/bin/startup
+COPY --from=build /app/target/demowebapp.war ${JWS_HOME}/webapps/
+CMD ${JWS_HOME}/bin/launch.sh
 
 
 
