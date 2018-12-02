@@ -7,11 +7,24 @@ WORKDIR /app
 COPY --from=clone /app/demowebapp /app 
 RUN mvn clean install
 
-FROM containers.cisco.com/aws_managed/tomcat-8-jws3.1
+FROM tomcat:7-jre8
+	
+# PATH Setup
+ENV CATALINA_BASE /usr/local/tomcat
+ENV CATALINA_HOME /usr/local/tomcat
+ENV PATH $CATALINA_HOME/bin:$PATH
+ENV CATALINA_TMPDIR /usr/local/tomcat/temp
+
+
+COPY --from=build /app/target/demowebapp.war ${CATALINA_HOME}/webapps/
+RUN echo "Building Your Own Application Container Image!"
+# Port Setup
 EXPOSE 8080
-WORKDIR /app
-COPY --from=build /app/target/demowebapp.war ${JWS_HOME}/webapps/
-CMD ${JWS_HOME}/bin/launch.sh
+
+# Main Command
+CMD ["/usr/local/tomcat/bin/catalina.sh","run"]
+#RUN mv tomcat
+#CMD ${CATALINA_HOME}/bin/startup
 
 
 
